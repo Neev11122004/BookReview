@@ -12,8 +12,7 @@ router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
     const userExists = await User.findOne({ email });
-    if (userExists)
-      return res.status(400).json({ ok: false, message: 'User already exists' });
+    if (userExists) return res.status(400).json({ ok: false, message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
@@ -30,12 +29,10 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ ok: false, message: 'Invalid email or password' });
+    if (!user) return res.status(400).json({ ok: false, message: 'Invalid email or password' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ ok: false, message: 'Invalid email or password' });
+    if (!isMatch) return res.status(400).json({ ok: false, message: 'Invalid email or password' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1d',
@@ -45,7 +42,7 @@ router.post('/login', async (req, res) => {
       .cookie('token', token, {
         httpOnly: true,
         sameSite: 'Lax',
-        secure: false, 
+        secure: false,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ ok: true, message: 'Login successful', username: user.username });
@@ -75,18 +72,18 @@ router.get('/me', async (req, res) => {
 });
 
 // Verify if logged in
-router.get('/verify', (req, res) => {
+router.get('/verify', async (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.json({ ok: false });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ ok: true, user: decoded });
+    const user = await User.findById(decoded.id).select('username email');
+    if (!user) return res.json({ ok: false });
+    res.json({ ok: true, user });
   } catch (err) {
     res.json({ ok: false });
   }
 });
-
-
 
 export default router;

@@ -17,7 +17,7 @@ const Navbar = () => {
         const data = await res.json();
         setIsAuthenticated(data.ok);
         if (data.ok) {
-          setUserData(data.user); // Save user data
+          setUserData(data.user);
         }
       } catch (err) {
         console.error(err);
@@ -39,26 +39,24 @@ const Navbar = () => {
   return (
     <div className="flex justify-between items-center px-6 py-4 shadow-md bg-zinc-900 text-[#ECDFCC] relative">
       <div>
-        <span className="text-2xl font-[Calvino] font-semibold">
-          <Link to="/" className="flex items-center font-medium">
-            BookReview
-          </Link>
-        </span>
+        <Link to="/" className="text-2xl font-[Calvino] font-semibold">
+          BookReview
+        </Link>
       </div>
 
-      <ul className="flex items-center gap-6 text-[#ECDFCC] font-[Calvino] text-balance">
+      <ul className="flex items-center gap-6 font-[Calvino]">
         <li>
-          <NavLink to="/" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "text-[#ECDFCC]")}>
+          <NavLink to="/" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "")}>
             Home
           </NavLink>
         </li>
         <li>
-          <NavLink to="/book_listings" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "text-[#ECDFCC]")}>
+          <NavLink to="/book_listings" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "")}>
             Listings
           </NavLink>
         </li>
         <li>
-          <NavLink to="/about" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "text-[#ECDFCC]")}>
+          <NavLink to="/about" className={({ isActive }) => (isActive ? "text-white font-bold underline" : "")}>
             About
           </NavLink>
         </li>
@@ -67,19 +65,18 @@ const Navbar = () => {
       <div className="flex items-center gap-4 relative">
         <FiSearch size={20} />
         {isAuthenticated ? (
-          <div
-            className="relative"
-            onClick={() => setShowDropdown(prev => !prev)}
-            // onMouseEnter={() => setShowDropdown(true)}
-            // onMouseLeave={() => setShowDropdown(false)}
-          >
-            <button className="flex items-center gap-2 border px-4 py-2 rounded-lg hover:bg-[#ECDFCC] hover:text-zinc-900 transition">
-              <FiUser size={18} /> Profile
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(prev => !prev)}
+              className="flex items-center gap-2 border px-4 py-2 rounded-lg hover:bg-[#ECDFCC] hover:text-zinc-900 transition"
+            >
+              <FiUser size={18} />
+              Profile
             </button>
 
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg p-4 z-10">
-                <p className="text-white mb-2">Hello, {userData?.username}</p>
+                <p className="text-white mb-2">Hello, {userData?.username || "User"}</p>
                 <Link to="/edit-profile" className="block text-sm text-[#ECDFCC] hover:underline mb-2">
                   Edit Profile
                 </Link>

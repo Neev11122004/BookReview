@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SignIn = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -19,15 +18,16 @@ const SignIn = () => {
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        credentials: 'include', // allows cookie to be sent
         body: JSON.stringify(formData)
       });
 
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && data.ok) {
         alert('Login successful!');
-        navigate('/book_listings'); // ✅ Redirect
+        window.location.reload(); //  reload the page so Navbar updates
+         window.location.href = '/book_listings';
       } else {
         alert(data.message || 'Login failed');
       }
