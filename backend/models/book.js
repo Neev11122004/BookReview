@@ -36,6 +36,6 @@ const bookSchema = new mongoose.Schema({
   }
 });
 
-// ✅ Use export default for ES Modules
+
 const Book = mongoose.model('Book', bookSchema);
 export default Book;

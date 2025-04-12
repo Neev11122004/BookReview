@@ -23,6 +23,15 @@ const Card = ({ book, isGrid }) => {
         <h3 className="text-lg font-semibold">{book.title}</h3>
         <p className="italic text-sm mt-1">{book.author}</p>
 
+        {/* ⭐ Avg Rating */}
+        {book.avgRating > 0 ? (
+          <p className="text-sm text-yellow-400 font-medium mt-1">
+            ⭐ {book.avgRating} / 5
+          </p>
+        ) : (
+          <p className="text-sm text-gray-400 mt-1">No ratings yet</p>
+        )}
+
         {/* Show more details in list view only */}
         {!isGrid && (
           <p className="text-xs mt-2 text-gray-300 line-clamp-3">{book.description}</p>

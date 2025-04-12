@@ -1,33 +1,35 @@
 import React, { useState } from 'react';
 
 const ReviewForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [text, setText] = useState('');
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (name && text) {
-      onSubmit({ name, text, date: new Date().toLocaleDateString() });
-      setName('');
-      setText('');
+    if (comment) {
+      onSubmit({ rating, comment });
+      setRating(5);
+      setComment('');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        className="bg-zinc-800 border border-zinc-600 rounded px-4 py-2 w-full text-white"
-        type="text"
-        placeholder="Your name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <select
+        value={rating}
+        onChange={(e) => setRating(Number(e.target.value))}
+        className="bg-zinc-800 border border-zinc-600 rounded px-4 py-2 text-white"
+      >
+        {[5, 4, 3, 2, 1].map((r) => (
+          <option key={r} value={r}>{r} Star{r !== 1 ? 's' : ''}</option>
+        ))}
+      </select>
       <textarea
         className="bg-zinc-800 border border-zinc-600 rounded px-4 py-2 w-full text-white"
         rows="4"
-        placeholder="Your review..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        placeholder="Write your review..."
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
       ></textarea>
       <button
         type="submit"

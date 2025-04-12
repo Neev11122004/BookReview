@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import bookRoutes from './routes/bookRoutes.js';
+import reviewRoutes from './routes/review.js';
+
 
 dotenv.config();
 const app = express();
@@ -24,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // MongoDB Connection
 mongoose

@@ -4,29 +4,58 @@ import ReviewForm from '../components/ReviewForm';
 import ReviewItem from '../components/ReviewItem';
 
 const BookReviewPage = () => {
-  const { id } = useParams(); // this should be the MongoDB _id
+  const { id } = useParams();
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBook = async () => {
+    const fetchBookAndReviews = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/books/${id}`);
-        const data = await res.json();
-        setBook(data);
+        const bookRes = await fetch(`http://localhost:5000/api/books/${id}`);
+        const bookData = await bookRes.json();
+        setBook(bookData);
+
+        const reviewsRes = await fetch(`http://localhost:5000/api/reviews/${id}`);
+        const reviewsData = await reviewsRes.json();
+        setReviews(reviewsData.reviews || []);
+
         setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch book:", err);
+        console.error("Failed to fetch book or reviews:", err);
         setLoading(false);
       }
     };
 
-    fetchBook();
+    fetchBookAndReviews();
   }, [id]);
 
-  const addReview = (review) => {
-    setReviews([review, ...reviews]);
+  const addReview = async ({ rating, comment }) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/reviews/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ rating, comment })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setReviews([data.review, ...reviews]);
+      } else {
+        alert(data.message || 'Failed to submit review');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong!');
+    }
+  };
+
+  const getAverageRating = () => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+    return (sum / reviews.length).toFixed(1);
   };
 
   if (loading) return <div className="text-white p-4">Loading...</div>;
@@ -53,6 +82,13 @@ const BookReviewPage = () => {
           <p className="italic text-lg">{book.author}</p>
           <p className="text-sm mt-1">{book.genre}</p>
           <p className="text-sm mt-1 text-zinc-400">{book.description}</p>
+
+          {/* ✅ Average Rating Display */}
+          {reviews.length > 0 && (
+            <p className="mt-2 text-yellow-400 font-semibold">
+              ⭐ Average Rating: {getAverageRating()} / 5
+            </p>
+          )}
         </div>
       </div>
 

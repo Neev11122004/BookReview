@@ -1,14 +1,32 @@
-// routes/bookRoutes.js
+
 import express from 'express';
 import Book from '../models/book.js';
+import Review from '../models/Review.js'; 
 
 const router = express.Router();
 
-// GET /api/books - Fetch all books
+// GET /api/books - Fetch all books 
 router.get('/', async (req, res) => {
   try {
     const books = await Book.find();
-    res.status(200).json(books);
+
+    const booksWithAvgRating = await Promise.all(
+      books.map(async (book) => {
+        const reviews = await Review.find({ book: book._id });
+
+        const avgRating =
+          reviews.length > 0
+            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            : 0;
+
+        return {
+          ...book.toObject(),
+          avgRating: parseFloat(avgRating.toFixed(1)),
+        };
+      })
+    );
+
+    res.status(200).json(booksWithAvgRating);
   } catch (error) {
     console.error('Error fetching books:', error);
     res.status(500).json({ error: 'Failed to fetch books' });
